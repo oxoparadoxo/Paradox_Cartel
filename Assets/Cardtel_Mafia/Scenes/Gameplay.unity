@@ -358,9 +358,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecc505f4170acaa49a9f7c7403fdc2c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _width: 2
-  _height: 2
+  _Width: 0
+  _Height: 0
+  _Resolution: 0
+  _Floor: 0
   randomNumber: 0
+  Row: 0
+  Column: 0
+  GridNumbers: 
+  RandomNumbers: 
+  PairCounter: 0
+  UniqueIndex: 0
 --- !u!1 &1416063598
 GameObject:
   m_ObjectHideFlags: 0
