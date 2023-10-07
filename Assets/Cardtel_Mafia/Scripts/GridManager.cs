@@ -34,8 +34,6 @@ public class GridManager : MonoBehaviour
         CheckValidInput();
         for (int i = 0; i < _Width*_Height; i++)
         {
-            _Resolution = _Width * _Height;
-            
             randomNumber = Random.Range(0, (_Width*_Height));
             Debug.Log(randomNumber);
             
@@ -73,6 +71,8 @@ public class GridManager : MonoBehaviour
             {
                 _InstantiatedTile = Instantiate(_TilePrefab, _TilePrefab.transform.position, Quaternion.identity);
                 _InstantiatedTile.transform.position = new Vector3(Column, _TilePrefab.transform.position.y, Row);
+                _InstantiatedTile.transform.rotation = Quaternion.Euler(new Vector3(180, 0, 0));
+                _InstantiatedTile.transform.name = GridNumbers[RandomNumbers[Row * _Width + Column]].ToString();
                 _InstantiatedTile.GetComponent<Tile>()?.SetText(GridNumbers[RandomNumbers[Row * _Width + Column]].ToString());
                 _InstantiatedTile.transform.parent = gameObject.transform;
                 //Debug.Log("Row : " + Row + " & Column : " + Column);
@@ -92,38 +92,86 @@ public class GridManager : MonoBehaviour
             _Height = 2;
         }
 
-        while (_Resolution % 2 != 0)
+        bool IsGreater = false;
+        while (_Width*_Height % 2 != 0)
         {
-            if (_Width % 2 == 0)
+            if (_Floor)
             {
-                if (_Floor && _Height > 2)
+                IsGreater = (_Width > _Height);
+
+                if (!IsGreater && _Height % 2 != 0)
                 {
-                    _Height--;
+                    if (_Height > 2)
+                    {
+                        _Height--;
+                    }
+                    else if (_Height < 2)
+                    {
+                        _Height++;
+                    }
+                    else
+                    {
+                        _Height = 2;
+                    }
                 }
-                else if (_Height < 2)
+                else if (IsGreater && _Width % 2 != 0)
                 {
-                    _Height++;
-                }
-                else
-                {
-                    _Height = 2;
+                    if (_Width > 2)
+                    {
+                        _Width--;
+                    }
+                    else if (_Width < 2)
+                    {
+                        _Width++;
+                    }
+                    else
+                    {
+                        _Width = 2;
+                    }
                 }
             }
             else
             {
-                if (_Floor && _Width > 2)
+                IsGreater = (_Width > _Height);
+                if (IsGreater && _Height % 2 != 0)
                 {
-                    _Width--;
+                    if (_Height > 2)
+                    {
+                        _Height++;
+                    }
+                    else if (_Height < 2)
+                    {
+                        _Height++;
+                    }
+                    else
+                    {
+                        _Height = 2;
+                    }
                 }
-                else if (_Width < 2)
+                else if (!IsGreater && _Width % 2 != 0)
                 {
-                    _Width++;
-                }
-                else
-                {
-                    _Width = 2;
+                    if (_Width > 2)
+                    {
+                        _Width++;
+                    }
+                    else if (_Width < 2)
+                    {
+                        _Width++;
+                    }
+                    else
+                    {
+                        _Width = 2;
+                    }
                 }
             }
+           
         }
+        SetCameraPosition(_Width, _Height);
+    }
+
+    void SetCameraPosition(float width,float height)
+    {
+        float up = (width>height)? width : height;
+        Camera.main.transform.position = new Vector3((float)(width/2) - 0.5f, up + 1f, (float)(height/2) - 0.5f);
     }
 }

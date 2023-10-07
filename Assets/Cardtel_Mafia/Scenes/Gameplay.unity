@@ -429,7 +429,7 @@ MonoBehaviour:
   _TilePrefab: {fileID: 5267503070791569032, guid: 71fab69006d5d5a439d5d8b777b59c66, type: 3}
   _StartPosition: {x: 0, y: 0, z: 0}
   _Width: 5
-  _Height: 4
+  _Height: 7
   _Resolution: 0
   _Floor: 0
   randomNumber: 0
