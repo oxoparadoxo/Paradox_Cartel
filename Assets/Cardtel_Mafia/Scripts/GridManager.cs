@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
+    public GameObject _TilePrefab;
+    public Vector3 _StartPosition;
     public int _Width,_Height,_Resolution;
     public bool _Floor = false;
     public Dictionary<int,int> Level = new Dictionary<int,int>();
@@ -16,12 +18,14 @@ public class GridManager : MonoBehaviour
     public List<int> RandomNumbers = new List<int>();
     public int PairCounter = 1;
     public int UniqueIndex = 0;
+    public GameObject _InstantiatedTile;
     private void Start()
     {
         CheckValidInput();
-        GenerateGrid();
         GenerateList();
+        GenerateGrid();
         UniqueIndex = 1;
+        _StartPosition = Vector3.zero;
 
     }
 
@@ -58,11 +62,20 @@ public class GridManager : MonoBehaviour
     void GenerateGrid()
     {
         CheckValidInput();
+        if(_TilePrefab == null)
+        {
+            return;
+        }
+
         for (int Row = 0; Row < _Height; Row++)
         {
             for (int Column = 0; Column < _Width; Column++)
             {
-                Debug.Log("Row : " + Row + " & Column : " + Column);
+                _InstantiatedTile = Instantiate(_TilePrefab, _TilePrefab.transform.position, Quaternion.identity);
+                _InstantiatedTile.transform.position = new Vector3(Column, _TilePrefab.transform.position.y, Row);
+                _InstantiatedTile.GetComponent<Tile>()?.SetText(GridNumbers[RandomNumbers[Row * _Width + Column]].ToString());
+                _InstantiatedTile.transform.parent = gameObject.transform;
+                //Debug.Log("Row : " + Row + " & Column : " + Column);
             }
         }
     }
