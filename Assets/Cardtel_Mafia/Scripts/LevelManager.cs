@@ -31,6 +31,7 @@ public class LevelManager : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0))
         {
+            
             SelectRotateTile();
         }
     }
@@ -41,22 +42,27 @@ public class LevelManager : MonoBehaviour
     }
     void SelectRotateTile()
     {
+        
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
             
-            if(PairCount >0 && PairCount <3)
+            if (PairCount >0 && PairCount <3)
             {
                 GameObject go = hit.collider.gameObject;
                 if(go.name.Equals("Ground"))
                 {
                     return;
                 }
-
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayAudio();
+                }
                 if (go != null)
                 {
                     Debug.Log(go.name);
+                    
                     go.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
                 }
                 if(PairCount == 1)
@@ -90,7 +96,10 @@ public class LevelManager : MonoBehaviour
                 {
                     return;
                 }
-
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayAudio();
+                }
                 if (go != null)
                 {
                     Debug.Log(go.name);
