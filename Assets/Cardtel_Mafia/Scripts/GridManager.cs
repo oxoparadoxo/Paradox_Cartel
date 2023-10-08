@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
+    public static GridManager Instance;
     public GameObject _TilePrefab;
-    public Vector3 _StartPosition;
+    public Vector3 _InstaPosition;
     public int _Width,_Height,_Resolution;
     public bool _Floor = false;
-    public Dictionary<int,int> Level = new Dictionary<int,int>();
     public int randomNumber = 0;
     public int Row = 0;
     public int Column = 0;
@@ -19,16 +19,28 @@ public class GridManager : MonoBehaviour
     public int PairCounter = 1;
     public int UniqueIndex = 0;
     public GameObject _InstantiatedTile;
+    private void Awake()
+    {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+    }
     private void Start()
     {
+        UniqueIndex = 1;
+        _InstaPosition = Vector3.zero;
+    }
+
+    public void PlayGame(int width,int height,bool IsFloor)
+    {
+        _Width = width;
+        _Height = height;
+        _Floor = IsFloor;
         CheckValidInput();
         GenerateList();
         GenerateGrid();
-        UniqueIndex = 1;
-        _StartPosition = Vector3.zero;
-
     }
-
     void GenerateList()
     {
         CheckValidInput();
@@ -44,17 +56,21 @@ public class GridManager : MonoBehaviour
             RandomNumbers.Add(randomNumber);
             if(UniqueIndex > 0 && UniqueIndex < (((_Width*_Height)/2)+1))
             { 
-                Level.Add(RandomNumbers[i], UniqueIndex);
+                //Level.Add(RandomNumbers[i], UniqueIndex);
                 GridNumbers.Add(UniqueIndex);
                 UniqueIndex++;
             }
             else
             {
                 UniqueIndex = 1;
-                Level.Add(RandomNumbers[i], UniqueIndex);
+                //Level.Add(RandomNumbers[i], UniqueIndex);
                 GridNumbers.Add(UniqueIndex);
                 UniqueIndex++;
             }    
+        }
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.SetLevelComplete((_Width * _Height) / 2);
         }
     }
     void GenerateGrid()
@@ -65,12 +81,15 @@ public class GridManager : MonoBehaviour
             return;
         }
 
+        _InstaPosition = Vector3.zero;
         for (int Row = 0; Row < _Height; Row++)
         {
+            
             for (int Column = 0; Column < _Width; Column++)
             {
-                _InstantiatedTile = Instantiate(_TilePrefab, _TilePrefab.transform.position, Quaternion.identity);
-                _InstantiatedTile.transform.position = new Vector3(Column, _TilePrefab.transform.position.y, Row);
+                _InstaPosition = new Vector3(Column * 1.5f, 0, Row*1.5f);
+                _InstantiatedTile = Instantiate(_TilePrefab, _InstaPosition, Quaternion.identity);
+                _InstantiatedTile.transform.position = new Vector3(_InstaPosition.x, _TilePrefab.transform.position.y, _InstaPosition.z);
                 _InstantiatedTile.transform.rotation = Quaternion.Euler(new Vector3(180, 0, 0));
                 _InstantiatedTile.transform.name = GridNumbers[RandomNumbers[Row * _Width + Column]].ToString();
                 _InstantiatedTile.GetComponent<Tile>()?.SetText(GridNumbers[RandomNumbers[Row * _Width + Column]].ToString());
@@ -172,6 +191,22 @@ public class GridManager : MonoBehaviour
     void SetCameraPosition(float width,float height)
     {
         float up = (width>height)? width : height;
-        Camera.main.transform.position = new Vector3((float)(width/2) - 0.5f, up + 1f, (float)(height/2) - 0.5f);
+        Camera.main.transform.position = new Vector3((float)(width/2), up *2f, (float)(height/2));
+    }
+
+
+    public void ClearGame()
+    {
+        if(gameObject.transform.childCount >0)
+        {
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+               Destroy(gameObject.transform.GetChild(i).gameObject);
+            }
+        }
+        GridNumbers.Clear();
+        RandomNumbers.Clear();
+        UniqueIndex = 1;
+        _InstaPosition = Vector3.zero;
     }
 }

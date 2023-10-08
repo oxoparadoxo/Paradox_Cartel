@@ -4,11 +4,22 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+
+    public static LevelManager Instance;
+
     public GameObject SelectedTile;
     public GameObject PairTile;
     public int PairCount = 0;
     public int Score = 0;
     public int Try = 0;
+    public int levelCompleteNumbre = 0;
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -22,18 +33,27 @@ public class LevelManager : MonoBehaviour
         {
             SelectRotateTile();
         }
-
     }
 
+    public void SetLevelComplete(int levelcomplete)
+    {
+        levelCompleteNumbre = levelcomplete;
+    }
     void SelectRotateTile()
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
+            
             if(PairCount >0 && PairCount <3)
             {
                 GameObject go = hit.collider.gameObject;
+                if(go.name.Equals("Ground"))
+                {
+                    return;
+                }
+
                 if (go != null)
                 {
                     Debug.Log(go.name);
@@ -65,13 +85,20 @@ public class LevelManager : MonoBehaviour
             }
             else
             {
-                PairCount = 1;
                 GameObject go = hit.collider.gameObject;
+                if (go.name.Equals("Ground"))
+                {
+                    return;
+                }
+
                 if (go != null)
                 {
                     Debug.Log(go.name);
                     go.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
                 }
+                
+                PairCount = 1;
+                
                 if (PairCount == 1)
                 {
                     SelectedTile = go;
@@ -95,6 +122,10 @@ public class LevelManager : MonoBehaviour
         
         Score++;
         Try++;
+        if(Score >= levelCompleteNumbre)
+        {
+            Invoke("ShowLevelComplete", 1f);
+        }
     }
 
     void DelayWrongPair()
@@ -109,5 +140,18 @@ public class LevelManager : MonoBehaviour
         }
         
         Try++;
+    }
+
+    void ShowLevelComplete()
+    {
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.SetScoreTry(Score, Try);
+        }
+        if (GridManager.Instance != null)
+        {
+            GridManager.Instance.ClearGame();
+        }
+        levelCompleteNumbre = 0;
     }
 }
