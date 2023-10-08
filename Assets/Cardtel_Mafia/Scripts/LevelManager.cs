@@ -153,5 +153,9 @@ public class LevelManager : MonoBehaviour
             GridManager.Instance.ClearGame();
         }
         levelCompleteNumbre = 0;
+        Score = 0;
+        Try = 0;
+        SelectedTile = null;
+        PairTile = null;
     }
 }
